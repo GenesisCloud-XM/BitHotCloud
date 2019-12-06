@@ -1,0 +1,76 @@
+
+1 主网支持智能合约部署功能，必须添加设置项，设置为1表示打开功能。
+说明： allowCreationOfContracts 是让remix编译的合约能部署。
+allowCreationOfContracts 、allowSameTokenName 是让tronStudio编译的合约能部署。
+
+--------- 示例 ------------
+committee = {
+   allowCreationOfContracts = 1  //mainnet:0 (reset by committee),test:1
+   allowAdaptiveEnergy = 1  //mainnet:0 (reset by committee),test:1
+   allowTvmTransferTrc10 = 1
+   allowSameTokenName = 1
+}
+
+2 主网支持调用智能合约函数返回常量，必须添加设置项，设置为true表示开启功能。
+vm = {
+     supportConstant = true
+}
+
+
+3 主网支持多重签名，必须要添加此项设置： 默认配置文件中是没有此项，添加后设置为1，表示打开功能。
+committee = {
+      allowMultiSign = 1
+}
+
+4 主网开启事件消息功能，必须修改如下：
+path、server是必须项。开启四种消息，四种消息关键字不能修改：
+block、transaction、contractevent、contractlog
+filter.contractAddress  设置为""
+filter.contractTopic 设置为""。
+
+--------- 示例 ------------
+event.subscribe = {
+    native = {
+      useNativeQueue = true // if true, use native message queue, else use event plugin.
+      bindport = 5555 // bind port
+      sendqueuelength = 1000 //max length of send queue
+    }
+
+    path = "plugin-kafka-1.0.0.zip" // 插件文件的绝对路径 这样是表示和主程序相同目录中
+    server = "127.0.0.1:9092"          // 接收事件消息的kafca服务器地址和端口
+    dbconfig="" // dbname|username|password
+    contractParse = true,
+    topics = [
+        {
+          triggerName = "block" // block trigger, the value can't be modified
+          enable = true     //true表示开启这个消息，false屏蔽消息
+          topic = "block" // plugin topic, the value could be modified
+        },
+        {
+          triggerName = "transaction"
+          enable = true
+          topic = "transaction"
+        },
+        {
+          triggerName = "contractevent"
+          enable = true
+          topic = "contractevent"
+        },
+        {
+          triggerName = "contractlog"
+          enable = true
+          topic = "contractlog"
+        }
+    ]
+filter = {
+       fromblock = "" // the value could be "", "earliest" or a specified block number as the beginning of the queried range
+       toblock = "" // the value could be "", "latest" or a specified block number as end of the queried range
+       contractAddress = [
+           "TVkNuE1BYxECWq85d8UR9zsv6WppBns9iH" // contract address you want to subscribe, if it's set to "", you will receive contract logs/events with any contract address.
+       ]
+
+       contractTopic = [
+           "f0f1e23ddce8a520eaa7502e02fa767cb24152e9a86a4bf02529637c4e57504b" // contract topic you want to subscribe, if it's set to "", you will receive contract logs/events with any contract topic.
+       ]
+}
+
